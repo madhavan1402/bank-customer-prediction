@@ -1,0 +1,112 @@
+|--- duration <= 645.50
+|   |--- poutcome_success <= 0.50
+|   |   |--- duration <= 222.50
+|   |   |   |--- month_oct <= 0.50
+|   |   |   |   |--- month_mar <= 0.50
+|   |   |   |   |   |--- age <= 19.50
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- age >  19.50
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |   |--- month_mar >  0.50
+|   |   |   |   |   |--- campaign <= 2.50
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- campaign >  2.50
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |--- month_oct >  0.50
+|   |   |   |   |--- day <= 20.00
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- day >  20.00
+|   |   |   |   |   |--- class: 1
+|   |   |--- duration >  222.50
+|   |   |   |--- month_oct <= 0.50
+|   |   |   |   |--- pdays <= 373.00
+|   |   |   |   |   |--- contact_unknown <= 0.50
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |   |   |--- contact_unknown >  0.50
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |   |--- pdays >  373.00
+|   |   |   |   |   |--- class: 1
+|   |   |   |--- month_oct >  0.50
+|   |   |   |   |--- duration <= 241.00
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- duration >  241.00
+|   |   |   |   |   |--- duration <= 524.50
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- duration >  524.50
+|   |   |   |   |   |   |--- class: 0
+|   |--- poutcome_success >  0.50
+|   |   |--- duration <= 182.50
+|   |   |   |--- day <= 13.50
+|   |   |   |   |--- class: 1
+|   |   |   |--- day >  13.50
+|   |   |   |   |--- class: 0
+|   |   |--- duration >  182.50
+|   |   |   |--- balance <= 11133.50
+|   |   |   |   |--- pdays <= 299.00
+|   |   |   |   |   |--- education_secondary <= 0.50
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- education_secondary >  0.50
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |--- pdays >  299.00
+|   |   |   |   |   |--- class: 0
+|   |   |   |--- balance >  11133.50
+|   |   |   |   |--- class: 0
+|--- duration >  645.50
+|   |--- duration <= 794.50
+|   |   |--- balance <= 306.50
+|   |   |   |--- age <= 38.50
+|   |   |   |   |--- pdays <= 72.50
+|   |   |   |   |   |--- age <= 30.50
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |   |   |--- age >  30.50
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |--- pdays >  72.50
+|   |   |   |   |   |--- class: 1
+|   |   |   |--- age >  38.50
+|   |   |   |   |--- age <= 51.50
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- age >  51.50
+|   |   |   |   |   |--- class: 0
+|   |   |--- balance >  306.50
+|   |   |   |--- pdays <= 96.00
+|   |   |   |   |--- duration <= 659.50
+|   |   |   |   |   |--- class: 1
+|   |   |   |   |--- duration >  659.50
+|   |   |   |   |   |--- day <= 5.50
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- day >  5.50
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |--- pdays >  96.00
+|   |   |   |   |--- class: 1
+|   |--- duration >  794.50
+|   |   |--- contact_unknown <= 0.50
+|   |   |   |--- day <= 20.50
+|   |   |   |   |--- duration <= 1109.00
+|   |   |   |   |   |--- month_feb <= 0.50
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- month_feb >  0.50
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |   |--- duration >  1109.00
+|   |   |   |   |   |--- poutcome_other <= 0.50
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |   |   |--- poutcome_other >  0.50
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |--- day >  20.50
+|   |   |   |   |--- day <= 27.50
+|   |   |   |   |   |--- month_nov <= 0.50
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- month_nov >  0.50
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |   |--- day >  27.50
+|   |   |   |   |   |--- class: 1
+|   |   |--- contact_unknown >  0.50
+|   |   |   |--- duration <= 1589.50
+|   |   |   |   |--- age <= 55.50
+|   |   |   |   |   |--- duration <= 815.50
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |   |   |--- duration >  815.50
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |   |--- age >  55.50
+|   |   |   |   |   |--- class: 1
+|   |   |   |--- duration >  1589.50
+|   |   |   |   |--- class: 1

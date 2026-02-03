@@ -1,78 +1,220 @@
+# ==========================================
+# Bank Customer Prediction - ML Project
+# Author: Madhavan N
+# ==========================================
+
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier, export_text, plot_tree
-from sklearn.metrics import classification_report, accuracy_score
+import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Load datasets
-data_bank = pd.read_csv("bank.csv", sep=';')
-data_bank_full = pd.read_csv("bank-full.csv", sep=';')
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.tree import DecisionTreeClassifier, export_text, plot_tree
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
+from sklearn.preprocessing import LabelEncoder
 
-# Display information about datasets
-print("bank.csv info:")
-data_bank.info()
-print("\nbank-full.csv info:")
-data_bank_full.info()
 
-# Load bank-names.txt (optional metadata or description)
-with open("bank-names.txt", "r") as f:
-    bank_names_content = f.read()
-print("\nbank-names.txt content:")
-print(bank_names_content)
+# ==========================================
+# Load Dataset
+# ==========================================
+bank = pd.read_csv("bank.csv", sep=";")
+bank_full = pd.read_csv("bank-full.csv", sep=";")
 
-# Encode categorical variables for bank.csv
-data_bank_encoded = pd.get_dummies(data_bank, columns=['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month', 'poutcome', 'y'], drop_first=True)
-data_bank_full_encoded = pd.get_dummies(data_bank_full, columns=['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month', 'poutcome', 'y'], drop_first=True)
+print("bank.csv Shape:", bank.shape)
+print("bank-full.csv Shape:", bank_full.shape)
 
-# Define features (X) and target (y) for bank.csv
-X_bank = data_bank_encoded.drop(columns=[col for col in data_bank_encoded.columns if col.startswith('y_')])
-y_bank = data_bank_encoded[[col for col in data_bank_encoded.columns if col.startswith('y_')]].iloc[:, 0]  # Binary target variable
 
-# Split dataset bank.csv into training and testing sets
-X_bank_train, X_bank_test, y_bank_train, y_bank_test = train_test_split(X_bank, y_bank, test_size=0.2, random_state=42)
+# ==========================================
+# Dataset Info
+# ==========================================
+print("\nbank.csv Info:")
+print(bank.info())
 
-# Train Decision Tree Classifier for bank.csv
-clf_bank = DecisionTreeClassifier(max_depth=5, random_state=42)
-clf_bank.fit(X_bank_train, y_bank_train)
+print("\nbank-full.csv Info:")
+print(bank_full.info())
 
-# Evaluate the model for bank.csv
-y_bank_pred = clf_bank.predict(X_bank_test)
-print("\nBank.csv Dataset Results:")
-print("Accuracy:", accuracy_score(y_bank_test, y_bank_pred))
-print("Classification Report:\n", classification_report(y_bank_test, y_bank_pred))
 
-# Visualize the decision tree for bank.csv and save the figure
-plt.figure(figsize=(20, 10))
-plot_tree(clf_bank, feature_names=X_bank.columns, class_names=['no', 'yes'], filled=True)
-plt.title("Decision Tree - bank.csv")
+# ==========================================
+# Encode Target Variable
+# ==========================================
+le = LabelEncoder()
+
+bank['y'] = le.fit_transform(bank['y'])
+bank_full['y'] = le.fit_transform(bank_full['y'])
+
+
+# ==========================================
+# One-Hot Encoding (Categorical Features)
+# ==========================================
+bank_encoded = pd.get_dummies(bank, drop_first=True)
+bank_full_encoded = pd.get_dummies(bank_full, drop_first=True)
+
+
+# ==========================================
+# Split Features & Target
+# ==========================================
+X_bank = bank_encoded.drop('y', axis=1)
+y_bank = bank_encoded['y']
+
+X_bank_full = bank_full_encoded.drop('y', axis=1)
+y_bank_full = bank_full_encoded['y']
+
+
+# ==========================================
+# Train-Test Split
+# ==========================================
+Xb_train, Xb_test, yb_train, yb_test = train_test_split(
+    X_bank, y_bank, test_size=0.2, random_state=42, stratify=y_bank
+)
+
+Xbf_train, Xbf_test, ybf_train, ybf_test = train_test_split(
+    X_bank_full, y_bank_full, test_size=0.2, random_state=42, stratify=y_bank_full
+)
+
+
+# ==========================================
+# Train Decision Tree (bank.csv)
+# ==========================================
+dt_bank = DecisionTreeClassifier(
+    max_depth=6,
+    min_samples_split=20,
+    random_state=42
+)
+
+dt_bank.fit(Xb_train, yb_train)
+
+
+# ==========================================
+# Evaluate bank.csv Model
+# ==========================================
+yb_pred = dt_bank.predict(Xb_test)
+
+acc_bank = accuracy_score(yb_test, yb_pred)
+
+print("\n===== bank.csv Results =====")
+print("Accuracy:", round(acc_bank * 100, 2), "%\n")
+
+print(classification_report(yb_test, yb_pred))
+
+
+# Confusion Matrix
+cm_bank = confusion_matrix(yb_test, yb_pred)
+
+plt.figure(figsize=(6, 5))
+sns.heatmap(cm_bank, annot=True, fmt='d', cmap='Blues')
+plt.title("Confusion Matrix - bank.csv")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.savefig("confusion_matrix_bank.png")
+plt.show()
+
+
+# ==========================================
+# Train Decision Tree (bank-full.csv)
+# ==========================================
+dt_bank_full = DecisionTreeClassifier(
+    max_depth=6,
+    min_samples_split=20,
+    random_state=42
+)
+
+dt_bank_full.fit(Xbf_train, ybf_train)
+
+
+# ==========================================
+# Evaluate bank-full.csv Model
+# ==========================================
+ybf_pred = dt_bank_full.predict(Xbf_test)
+
+acc_full = accuracy_score(ybf_test, ybf_pred)
+
+print("\n===== bank-full.csv Results =====")
+print("Accuracy:", round(acc_full * 100, 2), "%\n")
+
+print(classification_report(ybf_test, ybf_pred))
+
+
+# Confusion Matrix
+cm_full = confusion_matrix(ybf_test, ybf_pred)
+
+plt.figure(figsize=(6, 5))
+sns.heatmap(cm_full, annot=True, fmt='d', cmap='Greens')
+plt.title("Confusion Matrix - bank-full.csv")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.savefig("confusion_matrix_bank_full.png")
+plt.show()
+
+
+# ==========================================
+# Cross Validation (Stability Check)
+# ==========================================
+cv_scores = cross_val_score(
+    dt_bank, X_bank, y_bank, cv=5, scoring='accuracy'
+)
+
+print("\nCross Validation Accuracy (bank.csv):")
+print("Mean:", round(cv_scores.mean() * 100, 2), "%")
+print("Std :", round(cv_scores.std() * 100, 2), "%")
+
+
+# ==========================================
+# Feature Importance
+# ==========================================
+importances = pd.Series(
+    dt_bank.feature_importances_,
+    index=X_bank.columns
+).sort_values(ascending=False)
+
+
+plt.figure(figsize=(10, 6))
+importances.head(15).plot(kind='bar')
+plt.title("Top 15 Important Features")
+plt.ylabel("Importance")
+plt.tight_layout()
+plt.savefig("feature_importance.png")
+plt.show()
+
+
+# ==========================================
+# Decision Tree Visualization
+# ==========================================
+plt.figure(figsize=(22, 12))
+
+plot_tree(
+    dt_bank,
+    feature_names=X_bank.columns,
+    class_names=['No', 'Yes'],
+    filled=True,
+    max_depth=3
+)
+
+plt.title("Decision Tree (bank.csv - Top Levels)")
 plt.savefig("decision_tree_bank.png")
-plt.close()
+plt.show()
 
-# Repeat similar processing for bank-full.csv
-X_bank_full = data_bank_full_encoded.drop(columns=[col for col in data_bank_full_encoded.columns if col.startswith('y_')])
-y_bank_full = data_bank_full_encoded[[col for col in data_bank_full_encoded.columns if col.startswith('y_')]].iloc[:, 0]
 
-X_bank_full_train, X_bank_full_test, y_bank_full_train, y_bank_full_test = train_test_split(X_bank_full, y_bank_full, test_size=0.2, random_state=42)
+# ==========================================
+# Export Rules
+# ==========================================
+rules = export_text(
+    dt_bank,
+    feature_names=list(X_bank.columns)
+)
 
-clf_bank_full = DecisionTreeClassifier(max_depth=5, random_state=42)
-clf_bank_full.fit(X_bank_full_train, y_bank_full_train)
+with open("decision_tree_rules.txt", "w") as f:
+    f.write(rules)
 
-# Evaluate the model for bank-full.csv
-y_bank_full_pred = clf_bank_full.predict(X_bank_full_test)
-print("\nBank-Full.csv Dataset Results:")
-print("Accuracy:", accuracy_score(y_bank_full_test, y_bank_full_pred))
-print("Classification Report:\n", classification_report(y_bank_full_test, y_bank_full_pred))
+print("\nDecision Tree Rules saved to decision_tree_rules.txt")
 
-# Visualize the decision tree for bank-full.csv and save the figure
-plt.figure(figsize=(20, 10))
-plot_tree(clf_bank_full, feature_names=X_bank_full.columns, class_names=['no', 'yes'], filled=True)
-plt.title("Decision Tree - bank-full.csv")
-plt.savefig("decision_tree_bank_full.png")
-plt.close()
 
-# Export decision tree rules for both datasets
-rules_bank = export_text(clf_bank, feature_names=list(X_bank.columns))
-print("\nDecision Tree Rules for bank.csv:\n", rules_bank)
+# ==========================================
+# Summary
+# ==========================================
+print("\n========== PROJECT SUMMARY ==========")
 
-rules_bank_full = export_text(clf_bank_full, feature_names=list(X_bank_full.columns))
-print("\nDecision Tree Rules for bank-full.csv:\n", rules_bank_full)
+print("bank.csv Accuracy     :", round(acc_bank * 100, 2), "%")
+print("bank-full.csv Accuracy:", round(acc_full * 100, 2), "%")
+print("CV Mean Accuracy      :", round(cv_scores.mean() * 100, 2), "%")
+
+print("\nBank Customer Prediction Completed Successfully!")
